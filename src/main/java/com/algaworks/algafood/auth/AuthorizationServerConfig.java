@@ -40,6 +40,11 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                         .scopes("write", "read")
                         .redirectUris("http://aplicacao-cliente", "http://www.foodanalytics.local:3001")
                 .and()
+                    .withClient("webadmin")
+                        .authorizedGrantTypes("implicit") //NÃO pode ter refresh token
+                        .scopes("write", "read")
+                        .redirectUris("http://aplicacao-cliente")
+                .and()
                     .withClient("faturamento")
                         .secret(passwordEncoder.encode("faturamento123"))
                         .authorizedGrantTypes("client_credentials")
