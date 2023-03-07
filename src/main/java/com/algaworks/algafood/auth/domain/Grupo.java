@@ -23,7 +23,7 @@ import java.util.Set;
 @ToString
 @RequiredArgsConstructor
 @Entity
-public class Usuario {
+public class Grupo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,25 +32,19 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String senha;
-
     @ManyToMany
-    @JoinTable(name = "usuario_grupo",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "grupo_id"))
+    @JoinTable(name = "grupo_permissao",
+            joinColumns = @JoinColumn(name = "grupo_id"),
+            inverseJoinColumns = @JoinColumn(name = "permissao_id"))
     @ToString.Exclude
-    private Set<Grupo> grupos = new HashSet<>();
+    private Set<Permissao> permissoes = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Usuario usuario = (Usuario) o;
-        return getId() != null && Objects.equals(getId(), usuario.getId());
+        Grupo grupo = (Grupo) o;
+        return getId() != null && Objects.equals(getId(), grupo.getId());
     }
 
     @Override

@@ -11,19 +11,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
 @ToString
 @RequiredArgsConstructor
 @Entity
-public class Usuario {
+public class Permissao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,24 +28,14 @@ public class Usuario {
     private String nome;
 
     @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String senha;
-
-    @ManyToMany
-    @JoinTable(name = "usuario_grupo",
-            joinColumns = @JoinColumn(name = "usuario_id"),
-            inverseJoinColumns = @JoinColumn(name = "grupo_id"))
-    @ToString.Exclude
-    private Set<Grupo> grupos = new HashSet<>();
+    private String descricao;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Usuario usuario = (Usuario) o;
-        return getId() != null && Objects.equals(getId(), usuario.getId());
+        Permissao permissao = (Permissao) o;
+        return getId() != null && Objects.equals(getId(), permissao.getId());
     }
 
     @Override
