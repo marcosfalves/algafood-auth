@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -21,14 +20,12 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -39,34 +36,12 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private JwtKeyStoreProperties jwtKeyStoreProperties;
 
+    @Autowired
+    private DataSource dataSource;
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("algafood-web")
-                    .secret(passwordEncoder.encode("web123"))
-                    .authorizedGrantTypes("password", "refresh_token")
-                    .scopes("WRITE", "READ")
-                    .accessTokenValiditySeconds(6 * 60 * 60) //6 horas (padrão é 12 horas)
-                    .refreshTokenValiditySeconds(7 * 24 * 60 * 60) //7 dias (padrão é 30 dias)
-                .and()
-                    .withClient("foodanalytics")
-                        .secret(passwordEncoder.encode("food123"))
-                        .authorizedGrantTypes("authorization_code") //pode ter refresh token
-                        .scopes("WRITE", "READ")
-                        .redirectUris("http://aplicacao-cliente", "http://www.foodanalytics.local:3001")
-                .and()
-                    .withClient("webadmin")
-                        .authorizedGrantTypes("implicit") //NÃO pode ter refresh token
-                        .scopes("WRITE", "READ")
-                        .redirectUris("http://aplicacao-cliente")
-                .and()
-                    .withClient("faturamento")
-                        .secret(passwordEncoder.encode("faturamento123"))
-                        .authorizedGrantTypes("client_credentials")
-                        .scopes("WRITE", "READ")
-                .and()
-                    .withClient("checktoken")
-                        .secret(passwordEncoder.encode("check123"));
+        clients.jdbc(dataSource);
     }
 
     @Override
